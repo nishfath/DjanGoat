@@ -12,22 +12,22 @@ from app.views import utils
 
 @require_http_methods(["GET", "POST"])
 @user_is_authenticated
-def index(request, user_id):
+def index(request, user_ID):
     user = utils.current_user(request)
     if not user:
-        return HttpResponse("User " + str(user_id) + " NOT FOUND")
+        return HttpResponse("User " + str(user_ID) + " NOT FOUND")
     pto = PaidTimeOff.objects.filter(user=user).first()
     if not pto:
-        return HttpResponse("PTO " + str(user_id) + " NOT FOUND")
+        return HttpResponse("PTO " + str(user_ID) + " NOT FOUND")
     if request.method == "GET":
-        return index_get(request, user_id, user, pto)
+        return index_get(request, user_ID, user, pto)
     elif request.method == "POST":
-        return index_post(request, user_id, user, pto)
+        return index_post(request, user_ID, user, pto)
     else:
         return HttpResponse("Invalid HTTP method")
 
 
-def index_get(request, user_id, user, pto):  # pylint: disable=unused-argument
+def index_get(request, user_ID, user, pto):  # pylint: disable=unused-argument
     schedules = Schedule.to_calendar((Schedule.objects.filter(pto=pto)))
     context = pto.__dict__
     context.update({"schedules": schedules, "current_user": user})
@@ -35,7 +35,7 @@ def index_get(request, user_id, user, pto):  # pylint: disable=unused-argument
                   context=context)
 
 
-def index_post(request, user_id, user, pto):
+def index_post(request, user_ID, user, pto):
     form = request.POST
     if not form:
         return HttpResponse("No form found")
